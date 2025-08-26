@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Environment variables
+*.env
+.env.*
+
+# Byte-compiled / cache
+*.cache
+*.mo
+
+# Migrations (optional: keep if you want them in git)
+# */migrations/*.py
+# */migrations/*.pyc
+
+# Mac/Linux system files
+.DS_Store
+Thumbs.db
