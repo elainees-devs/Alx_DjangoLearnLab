@@ -10,4 +10,9 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="relationship_app/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(template_name="relationship_app/logout.html"), name="logout"),
     path("register/", views.register, name="register"),
+
+    # Task 3: role-based views
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
+    path("librarian-dashboard/", views.librarian_dashboard, name="librarian_dashboard"),
+    path("member-dashboard/", views.member_dashboard, name="member_dashboard"),
 ]
