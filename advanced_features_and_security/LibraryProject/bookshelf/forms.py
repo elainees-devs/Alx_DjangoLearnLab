@@ -1,6 +1,7 @@
 # bookshelf/forms.py
 from django import forms
 from django.core.validators import RegexValidator
+from .models import Book
 
 class SearchForm(forms.Form):
     """
@@ -22,3 +23,11 @@ class SearchForm(forms.Form):
         q = self.cleaned_data.get("q", "")
         # Additional sanitization if needed
         return q
+
+class ExampleForm(forms.ModelForm):
+    """
+    Example form for creating or editing Book instances.
+    """
+    class Meta:
+        model = Book
+        fields = ["title", "author", "publication_year"]
