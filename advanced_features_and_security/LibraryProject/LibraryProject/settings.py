@@ -47,6 +47,12 @@ SECURE_HSTS_SECONDS = env("DJANGO_HSTS_SECONDS")
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env("DJANGO_HSTS_INCLUDE_SUBDOMAINS")
 SECURE_HSTS_PRELOAD = env("DJANGO_HSTS_PRELOAD")
 
+# Tells Django that it is behind a proxy that handles SSL
+# The proxy (e.g., Nginx) should set X-Forwarded-Proto to 'https'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+
 # Browser protections
 X_FRAME_OPTIONS = "DENY"
 SECURE_BROWSER_XSS_FILTER = True
