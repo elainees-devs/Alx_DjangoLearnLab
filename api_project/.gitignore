@@ -8,6 +8,10 @@ dist/
 build/
 .eggs/
 
+# Python cache
+__pycache__/
+*.pyc
+
 # Virtual environment
 venv/
 ENV/
@@ -21,6 +25,11 @@ env/
 db.sqlite3
 media/
 staticfiles/
+
+
+
+# SQLite database
+db.sqlite3
 
 # IDEs and editors
 .vscode/
