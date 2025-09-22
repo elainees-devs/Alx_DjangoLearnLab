@@ -1,24 +1,40 @@
-# api/tests.py
+# api/test_views.py
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.contrib.auth.models import User
 from api.models import Author, Book
 
 class BookAPITest(APITestCase):
     def setUp(self):
+        # Create a test user for authentication
+        self.user = User.objects.create_user(username="testuser", password="pass1234")
+
         self.author = Author.objects.create(name="Ngugi wa Thiong'o")
-        self.book = Book.objects.create(title="The River Between", publication_year=1965, author=self.author)
+        self.book = Book.objects.create(
+            title="The River Between", 
+            publication_year=1965, 
+            author=self.author
+        )
 
     def test_list_books(self):
         url = reverse("book-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_create_book(self):
+    def test_create_book_requires_auth(self):
         url = reverse("book-list")
         data = {"title": "Devil on the Cross", "publication_year": 1980, "author": self.author.id}
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)  # requires auth
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)  # not logged in
+
+    def test_create_book_authenticated(self):
+        self.client.login(username="testuser", password="pass1234")  # ✅ login
+        url = reverse("book-list")
+        data = {"title": "Petals of Blood", "publication_year": 1977, "author": self.author.id}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)  # should succeed
+        self.assertEqual(response.data["title"], "Petals of Blood")
 
     def test_retrieve_book(self):
         url = reverse("book-detail", args=[self.book.id])
