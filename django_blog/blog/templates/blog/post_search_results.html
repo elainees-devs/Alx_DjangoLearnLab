@@ -1,0 +1,11 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h2>Search Results for "{{ request.GET.q }}"</h2>
+<ul>
+  {% for post in posts %}
+    <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a> by {{ post.author }}</li>
+  {% empty %}
+    <li>No posts found.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
