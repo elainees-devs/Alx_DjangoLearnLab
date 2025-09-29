@@ -20,6 +20,6 @@ path('profile/', views.profile_view, name='profile'),
 path('posts/', views.PostListView.as_view(), name='post_list'), #List all posts
 path('post/new/', views.PostCreateView.as_view(), name='post_create'), #Create new post
 path('post/<int:pk>/', views.PostDetailView.as_view(), name='post_detail'), #View single post
-path('post/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post_edit'), #Edit post
+path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post_edit'), #Edit post
 path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete') #Delete post
 ]
