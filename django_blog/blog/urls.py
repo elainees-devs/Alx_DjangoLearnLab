@@ -35,5 +35,5 @@ urlpatterns = [
 
     # Tagging & Search
     path('search/', views.PostSearchView.as_view(), name='post_search'),
-    path('tags/<slug:tag_slug>/', views.PostsByTagListView.as_view(), name='posts_by_tag'),         
+    path('tags/<slug:tag_slug>/', views.PostByTagListView.as_view(), name='posts_by_tag'),        
 ]
