@@ -20,4 +20,10 @@
     <p>No posts available.</p>
   {% endfor %}
 </ul>
+
+<form method="GET" action="{% url 'blog:post_search' %}">
+    <input type="text" name="q" placeholder="Search posts..." value="{{ request.GET.q }}">
+    <button type="submit">Search</button>
+</form>
+
 {% endblock %}
