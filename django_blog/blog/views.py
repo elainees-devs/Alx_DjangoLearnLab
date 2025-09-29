@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
+from taggit.models import Tag
 
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileForm
 from .models import Post, Comment
@@ -139,3 +141,19 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return self.object.post.get_absolute_url()
+    
+class PostSearchView(ListView):
+    model = Post
+    template_name = 'blog/post_search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()
+
