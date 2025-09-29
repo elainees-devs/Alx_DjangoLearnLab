@@ -1,0 +1,11 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h2>Posts Tagged: "{{ view.kwargs.tag_slug }}"</h2>
+<ul>
+  {% for post in posts %}
+    <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a> by {{ post.author }}</li>
+  {% empty %}
+    <li>No posts for this tag.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
