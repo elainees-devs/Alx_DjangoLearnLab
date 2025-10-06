@@ -28,11 +28,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2', None)
         password = validated_data.pop('password')
-        user = User.objects.create_user(**validated_data)  # calls CustomUser manager
+        # Explicitly call get_user_model().objects.create_user
+        user = get_user_model().objects.create_user(**validated_data)
         user.set_password(password)
         user.save()
-        # Create token for the new user
-        token, _ = Token.objects.get_or_create(user=user)
-        # Add token to serializer response
+        # Use Token.objects.create instead of get_or_create
+        token = Token.objects.create(user=user)
+        # Attach token key for serializer response
         self.fields['token'] = serializers.CharField(read_only=True, default=token.key)
         return user
