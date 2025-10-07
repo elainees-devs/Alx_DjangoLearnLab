@@ -17,7 +17,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.select_related("author").prefetch_related("comments").all()
+    queryset = Post.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = []  # e.g., ['author'] if you want direct field filters
