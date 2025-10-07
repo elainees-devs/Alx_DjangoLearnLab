@@ -50,3 +50,20 @@ python manage.py runserver
 - POST /api/accounts/register/
 - POST /api/accounts/login/
 - GET/PUT /api/accounts/profile/ (authenticated)
+
+## Follows & Feed API
+
+### Models
+- `User.following` (ManyToMany to self) — users this user follows.
+- `User.followers` (reverse relation) — users who follow this user.
+
+### Endpoints (authenticated)
+- POST `/api/accounts/follow/<user_id>/` — Follow user (cannot follow yourself).
+- POST `/api/accounts/unfollow/<user_id>/` — Unfollow user.
+- GET `/api/accounts/users/<user_id>/followers/` — Get followers of a user.
+- GET `/api/accounts/users/<user_id>/following/` — Get who a user is following.
+
+### Feed
+- GET `/api/posts/feed/` — Returns posts from users the current authenticated user follows, ordered by `created_at` descending.
+
+### Example: follow with curl
