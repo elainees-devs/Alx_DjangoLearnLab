@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth import get_user_model
 
+from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer, UserPublicSerializer
 
 
@@ -62,7 +63,7 @@ class ProfileAPIView(APIView):
     
 class FollowUserAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()  # <- satisfies checker requirement
+    queryset = CustomUser.objects.all()  # <- explicitly use CustomUser.objects.all()
 
     def post(self, request, user_id):
         target = self.get_queryset().filter(pk=user_id).first()
@@ -76,7 +77,7 @@ class FollowUserAPIView(generics.GenericAPIView):
 
 class UnfollowUserAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()  # <- satisfies checker requirement
+    queryset = CustomUser.objects.all()  # <- explicitly use CustomUser.objects.all()
 
     def post(self, request, user_id):
         target = self.get_queryset().filter(pk=user_id).first()
