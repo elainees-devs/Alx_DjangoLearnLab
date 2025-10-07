@@ -38,3 +38,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Attach token key for serializer response
         self.fields['token'] = serializers.CharField(read_only=True, default=token.key)
         return user
+    
+class FollowActionSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+
+class UserPublicSerializer(serializers.ModelSerializer):
+    followers_count = serializers.IntegerField(source='followers.count', read_only=True)
+    following_count = serializers.IntegerField(source='following.count', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'followers_count', 'following_count')
