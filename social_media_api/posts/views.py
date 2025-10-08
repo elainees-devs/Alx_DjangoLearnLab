@@ -6,14 +6,16 @@ from notifications.utils import create_notification
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
-from .models import Post, Comment, Like, Notification
+from .models import Post, Comment, Like
 from .serializers import (
     PostListSerializer,
     PostDetailSerializer,
     CommentSerializer,
 )
-from .permissions import IsOwnerOrReadOnly, IsAuthenticated
+from notifications.models import Notification
+from .permissions import IsOwnerOrReadOnly
 
 
 class StandardResultsSetPagination(PageNumberPagination):
