@@ -6,9 +6,7 @@ from rest_framework.authtoken.models import Token
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password]
-    )
+    password = serializers.CharField()
     password2 = serializers.CharField(write_only=True, required=True)
     token = serializers.SerializerMethodField(read_only=True)
     extra_field = serializers.CharField(required=False)  # optional
