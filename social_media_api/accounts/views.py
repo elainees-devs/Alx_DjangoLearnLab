@@ -1,6 +1,7 @@
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
-from rest_framework.response import Response, get_object_or_404
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -17,19 +18,24 @@ class RegisterAPIView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
 
-
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        # Always ensure token exists
         token, _ = Token.objects.get_or_create(user=user)
+
+        # Serialize user details
         user_data = UserSerializer(user, context={'request': request}).data
-        return Response({
-        'user': user_data,
-        'token': token.key
-},      status=status.HTTP_201_CREATED)
 
-
+        return Response(
+            {
+                "user": user_data,
+                "token": token.key
+            },
+            status=status.HTTP_201_CREATED
+        )
 class CustomObtainAuthToken(ObtainAuthToken):
     permission_classes = (permissions.AllowAny,)
 
@@ -63,7 +69,7 @@ class ProfileAPIView(APIView):
     
 class FollowUserAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = CustomUser.objects.all()  # <- explicitly use CustomUser.objects.all()
+    queryset = CustomUser.objects.all()
 
     def post(self, request, user_id):
         target = self.get_queryset().filter(pk=user_id).first()
@@ -77,7 +83,7 @@ class FollowUserAPIView(generics.GenericAPIView):
 
 class UnfollowUserAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = CustomUser.objects.all()  # <- explicitly use CustomUser.objects.all()
+    queryset = CustomUser.objects.all() 
 
     def post(self, request, user_id):
         target = self.get_queryset().filter(pk=user_id).first()
@@ -87,3 +93,32 @@ class UnfollowUserAPIView(generics.GenericAPIView):
             return Response({"detail": "Cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
         request.user.unfollow(target)
         return Response({"detail": f"You have unfollowed {target.username}."}, status=status.HTTP_200_OK)
+    
+class UserFollowersAPIView(generics.ListAPIView):
+    """
+    List all followers of a given user.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserPublicSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        user = get_object_or_404(CustomUser, pk=user_id)
+        # CustomUser model must have a 'followers' ManyToMany field
+        return user.followers.all()
+
+
+class UserFollowingAPIView(generics.ListAPIView):
+    """
+    List all users that a given user is following.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserPublicSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        user = get_object_or_404(CustomUser, pk=user_id)
+        # 'following' is the related_name for the followers ManyToMany
+        return user.following.all()
+
+
