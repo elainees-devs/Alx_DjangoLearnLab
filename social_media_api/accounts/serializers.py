@@ -25,16 +25,17 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2', None)
-        validated_data.pop('extra_field', None)  # ignore if unused
-
         password = validated_data.pop('password')
-        user = User.objects.create_user(**validated_data)
+
+        # explicitly call get_user_model() 
+        user = get_user_model().objects.create_user(**validated_data)
         user.set_password(password)
         user.save()
 
-        # ensure token exists
-        Token.objects.get_or_create(user=user)
+        # explicitly use Token.objects.create 
+        Token.objects.create(user=user)
         return user
+
 
     def get_token(self, obj):
         token, _ = Token.objects.get_or_create(user=obj)
