@@ -1,0 +1,10 @@
+django>=4.2
+djangorestframework>=3.14
+djangorestframework-authtoken
+mysqlclient=2.2.7
+Pillow>=9.0
+psycopg2-binary
+python-dotenv
+gunicorn
+whitenoise>=6.0
+dj-database-url
