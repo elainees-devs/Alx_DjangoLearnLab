@@ -1,0 +1,10 @@
+{% if post %}
+<div class="comment-form-container">
+    <form method="post" action="{% url 'posts:add_comment' post.id %}">
+        {% csrf_token %}
+        <label for="id_content">Add a comment:</label>
+        <textarea name="content" id="id_content" placeholder="Write your comment..." required></textarea>
+        <button type="submit">Comment</button>
+    </form>
+</div>
+{% endif %}
