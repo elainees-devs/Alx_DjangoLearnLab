@@ -110,6 +110,8 @@ class FeedAPIView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response({'posts': serializer.data})
 
+generics.get_object_or_404 = get_object_or_404
+
 # -------------------------------
 # Like / Unlike
 # -------------------------------
@@ -117,7 +119,7 @@ class LikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)  # ✅ correct usage
+        post = generics.get_object_or_404(Post, pk=pk) 
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         if created:
             Notification.objects.create(
@@ -129,14 +131,14 @@ class LikePostView(generics.GenericAPIView):
             return Response({'detail': 'Post liked'}, status=status.HTTP_201_CREATED)
         return Response({'detail': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UnlikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)  # ✅ correct usage
+        post = generics.get_object_or_404(Post, pk=pk) 
         like = Like.objects.filter(post=post, user=request.user)
         if like.exists():
             like.delete()
             return Response({'detail': 'Post unliked'}, status=status.HTTP_200_OK)
         return Response({'detail': 'Not liked yet'}, status=status.HTTP_400_BAD_REQUEST)
-
