@@ -1,41 +1,37 @@
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth import login,authenticate, logout
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth import get_user_model
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import CustomUser
-from .serializers import RegisterSerializer, UserSerializer, UserPublicSerializer
+from .serializers import RegisterSerializer, UserSerializer, UserPublicSerializer, LoginSerializer
 
 
 User = get_user_model()
 
 
-class RegisterAPIView(generics.CreateAPIView):
+class RegisterUser(generics.GenericAPIView):
     serializer_class = RegisterSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [AllowAny]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'accounts/register.html'
 
-    def create(self, request, *args, **kwargs):
+    def get(self, request):
+        serializer = self.get_serializer()
+        return Response({'form': serializer})
+
+    def post(self, request):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-
-        # Always ensure token exists
-        token, _ = Token.objects.get_or_create(user=user)
-
-        # Serialize user details
-        user_data = UserSerializer(user, context={'request': request}).data
-
-        return Response(
-            {
-                "user": user_data,
-                "token": token.key
-            },
-            status=status.HTTP_201_CREATED
-        )
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({'form': serializer, 'token': serializer.get_token(user)})
+        return Response({'form': serializer, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 class CustomObtainAuthToken(ObtainAuthToken):
     permission_classes = (permissions.AllowAny,)
 
@@ -49,7 +45,45 @@ class CustomObtainAuthToken(ObtainAuthToken):
         user_data = UserSerializer(user, context={'request': request}).data
         return Response({'token': token.key, 'user': user_data})
 
+class LoginUser(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'accounts/login.html'
 
+    def get(self, request):
+        serializer = self.get_serializer()
+        return Response({'form': serializer})
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)  # log in the user
+                token, _ = Token.objects.get_or_create(user=user)
+                request.session['api_token'] = token.key  # store token in session
+
+                # redirect to feed page (or any other page)
+                return redirect('posts:feed')  
+
+            return Response({'form': serializer, 'errors': {'non_field_errors': ['Invalid credentials']}}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'form': serializer, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutUser(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def get(self, request):
+            logout(request)
+            return redirect('accounts:login')  # redirect to login page after logout
+
+
+    
 class ProfileAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
