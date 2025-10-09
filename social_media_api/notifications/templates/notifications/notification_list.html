@@ -1,0 +1,26 @@
+
+
+{% block content %}
+<h1>Notifications</h1>
+
+{% if notifications %}
+    <ul>
+    {% for notification in notifications %}
+        <li>
+            <strong>{{ notification.actor.username }}</strong>
+            {{ notification.verb }}
+            {% if notification.target %}
+                on <a href="{{ notification.target.get_absolute_url }}">{{ notification.target }}</a>
+            {% endif %}
+            <small>— {{ notification.timestamp|date:"M d, Y H:i" }}</small>
+            {% if not notification.read %}
+                <span style="color: red;">(New)</span>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no notifications.</p>
+{% endif %}
+
+{% endblock %}
