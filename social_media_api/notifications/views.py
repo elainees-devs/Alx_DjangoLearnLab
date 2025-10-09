@@ -1,11 +1,8 @@
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from .models import Notification
-from .serializers import NotificationSerializer
 
-class NotificationListView(generics.ListAPIView):
-    serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Notification.objects.filter(recipient=self.request.user)
+@login_required
+def notification_list(request):
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-timestamp')
+    return render(request, 'notifications/notification_list.html', {'notifications': notifications})
