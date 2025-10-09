@@ -1,6 +1,9 @@
 from pathlib import Path
 import environ
 
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,9 +20,10 @@ environ.Env.read_env(env_file=BASE_DIR/'.env')
 SECRET_KEY = env('SECRET_KEY')
 
 # Set DEBUG dynamically
-DEBUG = env('DEBUG')
+DEBUG = False # set to False for production
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com',]
 
 
 # Application definition
@@ -54,6 +58,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 REST_FRAMEWORK = {
 'DEFAULT_AUTHENTICATION_CLASSES': (
+'rest_framework.authentication.SessionAuthentication',
 'rest_framework.authentication.TokenAuthentication',
 ),
 'DEFAULT_PERMISSION_CLASSES': (
@@ -88,19 +93,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': f"django.db.backends.{env('DB_ENGINE', default='postgresql')}",
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
+    'default': {   # now MySQL
+        'ENGINE': f"django.db.backends.{env('DB_ENGINE', default='mysql')}",
+        'NAME': env('MYSQL_DB'),
+        'USER': env('MYSQL_USER'),
+        'PASSWORD': env('MYSQL_PASSWORD'),
+        'HOST': env('MYSQL_HOST', default='localhost'),
+        'PORT': env('MYSQL_PORT', default='3306'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
     }
 }
+    # 'default': {
+    #     'ENGINE': f"django.db.backends.{env('DB_ENGINE', default='postgresql')}",
+    #     'NAME': env('DB_NAME'),
+    #     'USER': env('DB_USER'),
+    #     'PASSWORD': env('DB_PASSWORD'),
+    #     'HOST': env('DB_HOST', default='localhost'),
+    #     'PORT': env('DB_PORT', default='5432'),
+    # },
+    
+
+
 
 
 # Password validation
