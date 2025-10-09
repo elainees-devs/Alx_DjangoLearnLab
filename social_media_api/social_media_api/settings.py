@@ -116,6 +116,13 @@ DATABASES = {
     # },
     
 
+# -------------------------------
+# Security settings
+# -------------------------------
+SECURE_BROWSER_XSS_FILTER = True          # Enables XSS protection
+SECURE_CONTENT_TYPE_NOSNIFF = True        # Prevents MIME-type sniffing
+X_FRAME_OPTIONS = 'DENY'                  # Prevents clickjacking
+SECURE_SSL_REDIRECT = True                # Redirect all HTTP to HTTPS (set False for dev if needed)
 
 
 
