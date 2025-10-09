@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Register New User</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="id_username">Username:</label>
+            <input type="text" name="username" id="id_username" placeholder="Enter your username" required>
+
+            <label for="id_email">Email:</label>
+            <input type="email" name="email" id="id_email" placeholder="Enter your email" required>
+
+            <label for="id_password">Password:</label>
+            <input type="password" name="password" id="id_password" placeholder="Enter your password" required>
+
+            <label for="id_password2">Confirm Password:</label>
+            <input type="password" name="password2" id="id_password2" placeholder="Confirm your password" required>
+
+            <button type="submit">Register</button>
+        </form>
+
+        {% if errors %}
+            <ul class="errors">
+                {% for field, msgs in errors.items %}
+                    <li><strong>{{ field|capfirst }}:</strong> {{ msgs|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

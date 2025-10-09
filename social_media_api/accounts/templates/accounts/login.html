@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+<div class="login-container">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <label for="id_username">Username:</label>
+        <input type="text" name="username" id="id_username" placeholder="Enter your username" required>
+        
+        <label for="id_password">Password:</label>
+        <input type="password" name="password" id="id_password" placeholder="Enter your password" required>
+        
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+    {% if token %}
+        <p><strong>Your token:</strong> {{ token }}</p>
+    {% endif %}
+
+    {% if errors %}
+        <ul class="errors">
+            {% for field, msgs in errors.items %}
+                <li><strong>{{ field|capfirst }}:</strong> {{ msgs|join:", " }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
